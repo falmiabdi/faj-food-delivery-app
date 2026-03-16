@@ -1,11 +1,18 @@
+import { images } from '@/constants';
 import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { Image, Text, TouchableOpacity, View } from 'react-native';
 
-const CartButton = () => {
+const CartButton: React.FC = () => {
     const totalItems = 10;
     return (
-        <TouchableOpacity>
-            <Text>CarButton</Text>
+        <TouchableOpacity className='cart-btn ' onPress={()=>{}}>
+            <Image source={images.bag} className="size-5" resizeMode="contain" />
+            {totalItems > 0 && (
+                <View className='cart-badge '>
+                    <Text className='small-bold text-white'>{totalItems}</Text>
+                </View>
+            )}
+            <Text>CartButton</Text>
         </TouchableOpacity>
     );
 };

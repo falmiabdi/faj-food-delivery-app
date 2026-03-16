@@ -1,3 +1,4 @@
+import CartButton from "@/components/cartButton";
 import { images, offers } from "@/constants";
 import cn from 'clsx';
 import { Fragment } from "react";
@@ -50,13 +51,17 @@ export default function Index() {
       <View className="flex-start ">
       <Text className="small-bold test-primary ">Deliver To</Text>
   
+     
   <TouchableOpacity className="flex-center flex-row gap-x-1 mt-0.5 ">
     <Text className="paragraph-bold text-dark-100">Koye Facce</Text>
+
+
+
 <Image source={images.arrowDown} className="size-3" resizeMode="contain"/>
   </TouchableOpacity>
 
       </View>
-      <Text className="">Cart</Text>
+      <CartButton />
     </View>
   )}
       />
