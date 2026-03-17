@@ -107,7 +107,7 @@ const SignIn = () => {
           <CustomButton 
             title={isSubmitting ? "Signing in..." : "Sign In"}
             onPress={handleSubmit}
-            disabled={isSubmitting}
+            isLoading={isSubmitting}
           />
           
           {isSubmitting && (

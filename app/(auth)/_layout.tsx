@@ -1,7 +1,6 @@
 import { images } from "@/constants";
 import { Slot } from "expo-router";
-import React, { useState } from "react";
-
+import React from "react";
 import {
   Dimensions,
   Image,
@@ -13,10 +12,9 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const { height, width } = Dimensions.get("window");
+const { height } = Dimensions.get("window");
 
-const _layout = () => {
-
+const Layout = () => {
   return (
     <SafeAreaView className="flex-1 bg-white">
       <KeyboardAvoidingView
@@ -24,32 +22,47 @@ const _layout = () => {
         className="flex-1"
       >
         <ScrollView
-          className="bg-white h-full"
+          className="flex-1"
           keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{
+            flexGrow: 1,
+          }}
         >
-          {/* Header Image Section */}
-          <View
-            className="w-full relative"
-            style={{ height: Dimensions.get("screen").height / 2.25 }}
-          >
+          {/* Header Image Section - Reduced height */}
+          <View className="w-full" style={{ height: height * 0.25 }}>
             <ImageBackground
               source={images.loginGraphic}
-              className="size-full rounded-b-lg"
-              resizeMode="stretch"
-              imageStyle={{ resizeMode: "stretch" }}
+              className="w-full h-full"
+              resizeMode="cover"
             >
-              <Image
-                source={images.logo}
-                className="self-center size-48 absolute -bottom-16 z-10"
-                resizeMode="contain"       
-              />
+              {/* Empty View for background */}
             </ImageBackground>
           </View>
-       <Slot/>
+
+          {/* Logo positioned between header and content */}
+          <View className="items-center -mt-12 mb-4 z-10">
+            <View className="bg-white p-2 rounded-full shadow-lg">
+              <Image
+                source={images.logo}
+                className="w-20 h-20"
+                resizeMode="contain"
+              />
+            </View>
+          </View>
+
+          {/* Content Area */}
+          <View style={{ 
+            paddingHorizontal: 16,
+            paddingBottom: 40,
+            minHeight: height * 0.7,
+          }}>
+            <Slot />
+          </View>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
 
-export default _layout;
+export default Layout;
