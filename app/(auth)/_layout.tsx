@@ -8,7 +8,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  View
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -42,7 +42,7 @@ const Layout = () => {
 
           {/* Logo positioned between header and content */}
           <View className="items-center -mt-12 mb-4 z-10">
-            <View className="bg-white p-2 rounded-full shadow-lg">
+            <View className=" p-2 rounded-full shadow-lg">
               <Image
                 source={images.logo}
                 className="w-20 h-20"
@@ -52,11 +52,13 @@ const Layout = () => {
           </View>
 
           {/* Content Area */}
-          <View style={{ 
-            paddingHorizontal: 16,
-            paddingBottom: 40,
-            minHeight: height * 0.7,
-          }}>
+          <View
+            style={{
+              paddingHorizontal: 16,
+              paddingBottom: 300,
+              minHeight: height * 0.7,
+            }}
+          >
             <Slot />
           </View>
         </ScrollView>

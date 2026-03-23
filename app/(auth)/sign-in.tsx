@@ -5,53 +5,46 @@ import CustomButton from "@/components/CustomButton";
 import CustomInput from "@/components/CustomInput";
 
 const SignIn = () => {
+  // State management with formData object
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+  });
+  
+  // Separate state for errors
   const [errors, setErrors] = useState({ email: '', password: '' });
 
-  const validateForm = () => {
-    let isValid = true;
-    const newErrors = { email: '', password: '' };
-
-    // Email validation
-    if (!email) {
-      newErrors.email = 'Email is required';
-      isValid = false;
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      newErrors.email = 'Please enter a valid email';
-      isValid = false;
-    }
-
-    // Password validation
-    if (!password) {
-      newErrors.password = 'Password is required';
-      isValid = false;
-    } else if (password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
-      isValid = false;
-    }
-
-    setErrors(newErrors);
-    return isValid;
-  };
-
+  // Handle form submission
   const handleSubmit = async () => {
-    if (!validateForm()) {
+    // Validate form
+    if (!formData.email || !formData.password) {
+      Alert.alert('Error', 'Please fill in all fields');
       return;
     }
 
+    // Basic email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      Alert.alert('Error', 'Please enter a valid email address');
+      return;
+    }
+
+    // Basic password validation
+    if (formData.password.length < 6) {
+      Alert.alert('Error', 'Password must be at least 6 characters');
+      return;
+    }
+
+    setIsSubmitting(true);
+    
     try {
-      setIsSubmitting(true);
-      
-      // TODO: Add your authentication logic here
-      console.log('Sign in attempt:', { email, password });
-      
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1500));
       
-      // Navigate on success
-      // router.replace('/home');
+      // Show success message and navigate
+      Alert.alert('Success', 'You have successfully signed in!');
+      router.replace('/');
       
     } catch (error) {
       Alert.alert('Error', 'Invalid email or password. Please try again.');
@@ -71,24 +64,26 @@ const SignIn = () => {
 
         {/* Form */}
         <View className="space-y-4">
+          {/* Email Input */}
           <CustomInput  
             placeholder="Enter your email"
-            value={email}
+            value={formData.email}
             onChangeText={(text) => {
-              setEmail(text);
-              setErrors(prev => ({ ...prev, email: '' }));
+              setFormData({ ...formData, email: text });
+              setErrors({ ...errors, email: '' });
             }}
             label='Email'
             keyboardType="email-address"
             error={errors.email}
           />
           
+          {/* Password Input */}
           <CustomInput  
             placeholder="Enter your password"
-            value={password}
+            value={formData.password}
             onChangeText={(text) => {
-              setPassword(text);
-              setErrors(prev => ({ ...prev, password: '' }));
+              setFormData({ ...formData, password: text });
+              setErrors({ ...errors, password: '' });
             }}
             label='Password'
             secureTextEntry={true}
@@ -110,6 +105,7 @@ const SignIn = () => {
             isLoading={isSubmitting}
           />
           
+          {/* Loading Indicator */}
           {isSubmitting && (
             <ActivityIndicator size="large" color="#0000ff" />
           )}
