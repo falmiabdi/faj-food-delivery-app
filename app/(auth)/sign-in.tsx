@@ -16,15 +16,12 @@ const SignIn = () => {
       Alert.alert('Error', 'Please fill in all fields');
       return;
     }
-
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       Alert.alert('Error', 'Please enter a valid email address');
       return;
     }
-
     setIsSubmitting(true);
-    
     try {
       const result = await signIn({ email, password });
       console.log('Signed in:', result);

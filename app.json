@@ -40,7 +40,15 @@
           }
         }
       ],
-      "expo-font"
+      "expo-font",
+      [
+        "@sentry/react-native/expo",
+        {
+          "url": "https://sentry.io/",
+          "project": "faj-food-delivery-app",
+          "organization": "faji-designer-and-developer"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

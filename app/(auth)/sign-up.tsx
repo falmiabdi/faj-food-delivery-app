@@ -25,8 +25,8 @@ const SignUp = () => {
       return;
     }
 
-    if (password.length < 4) {
-      Alert.alert("Error", "Password must be at least 4 characters");
+    if (password.length < 8) {
+      Alert.alert("Error", "Password must be at least 8 characters");
       return;
     }
 
@@ -36,15 +36,16 @@ const SignUp = () => {
       // Create user in Appwrite and store in database
       const newUser = await createUser({ email, password, name });
 
-      console.log("User created successfully:", newUser);
-
-      // Show success message
-      Alert.alert("Success!", "Account created successfully! Please sign in.", [
-        {
-          text: "Sign In",
-          onPress: () => router.replace("./sign-in"),
-        },
-      ]);
+      Alert.alert(
+        "User created successfully:",
+        `Welcome, ${newUser.name}! Please sign in to continue.`,
+        [
+          {
+            text: "Sign In",
+            onPress: () => router.replace("./sign-in"),
+          },
+        ],
+      );
     } catch (error: any) {
       console.error("Sign up error:", error);
 

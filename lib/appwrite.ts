@@ -31,6 +31,7 @@ export const databases = new Databases(client);
 export const avatars = new Avatars(client);
 
 // CREATE USER
+// lib/appwrite.ts
 export const createUser = async ({ email, password, name }: any) => {
   try {
     // Step 1: Create account in Appwrite Auth
@@ -38,7 +39,7 @@ export const createUser = async ({ email, password, name }: any) => {
 
     if (!newAccount) throw new Error("Failed to create account");
 
-    // Step 2: Create user document in database
+    // Step 2: Create user document with FIXED avatar
     const userData = await databases.createDocument(
       appwriteconfig.databaseId,
       appwriteconfig.userCollectionId,
@@ -47,7 +48,7 @@ export const createUser = async ({ email, password, name }: any) => {
         accountId: newAccount.$id,
         email: email,
         name: name,
-        avatar: avatars.getInitials(name),
+        avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random`,
       },
     );
 
@@ -75,7 +76,7 @@ export const signIn = async ({ email, password }: any) => {
       appwriteconfig.userCollectionId,
       [Query.equal("accountId", currentAccount.$id)],
     );
-
+      
     const user = userDocument.documents[0];
 
     return {
