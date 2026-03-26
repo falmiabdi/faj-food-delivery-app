@@ -1,13 +1,7 @@
-import { View, Text } from 'react-native'
-import React from 'react'
-import { Redirect, Slot } from 'expo-router'  // Fixed import
+import { Tabs } from "expo-router";
 
-const LayOut = () => {
-  const isAuthenticated = true;
-  if (!isAuthenticated) {
-    return <Redirect href="./(auth)/sign-in"/>
-  }
-  return <Slot/>
+export default function TabsLayout() {
+  return (
+    <Tabs screenOptions={{ headerShown: false }} />
+  );
 }
-
-export default LayOut

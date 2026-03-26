@@ -1,59 +1,62 @@
 import CustomButton from "@/components/CustomButton";
 import CustomInput from "@/components/CustomInput";
 import { createUser } from "@/lib/appwrite";
+import useAuthStore from "@/store/useAuthStore";
+import * as sentry from "@sentry/react-native";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import { ActivityIndicator, Alert, Text, View } from "react-native";
 
 const SignUp = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
-  const [errors, setErrors] = useState({ email: "", password: "", name: "" });
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
+  const [errors, setErrors] = useState({ name: "", email: "", password: "" });
+
+  const setUser = useAuthStore((state) => state.setUser);
+  const setIsAuthenticated = useAuthStore((state) => state.setIsAuthenticated);
 
   const handleSubmit = async () => {
-    // Validation
-    if (!name || !email || !password) {
+    // Validate fields
+    if (!formData.name || !formData.email || !formData.password) {
       Alert.alert("Error", "Please fill in all fields");
       return;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+    if (!emailRegex.test(formData.email)) {
       Alert.alert("Error", "Please enter a valid email address");
       return;
     }
 
-    if (password.length < 8) {
+    if (formData.password.length < 8) {
       Alert.alert("Error", "Password must be at least 8 characters");
       return;
     }
 
     setIsSubmitting(true);
-
     try {
-      // Create user in Appwrite and store in database
-      const newUser = await createUser({ email, password, name });
+      const user = await createUser(formData);
+      console.log("User created:", user);
 
-      Alert.alert(
-        "User created successfully:",
-        `Welcome, ${newUser.name}! Please sign in to continue.`,
-        [
-          {
-            text: "Sign In",
-            onPress: () => router.replace("./sign-in"),
-          },
-        ],
-      );
+      // Update the auth store with the user data
+      if (user) {
+        setUser(user);
+        setIsAuthenticated(true);
+      }
+
+      // Navigate to home
+      router.replace("/");
     } catch (error: any) {
       console.error("Sign up error:", error);
-
-      if (error?.message?.includes("user already exists")) {
-        Alert.alert("Error", "User with this email already exists");
-      } else {
-        Alert.alert("Error", "Failed to create account. Please try again.");
-      }
+      Alert.alert(
+        "Error",
+        error.message || "Failed to create account. Please try again.",
+      );
+      sentry.captureException(error);
     } finally {
       setIsSubmitting(false);
     }
@@ -66,15 +69,15 @@ const SignUp = () => {
           <Text className="text-3xl font-bold text-gray-900">
             Create Account
           </Text>
-          <Text className="text-gray-600 mt-2">Sign up to continue</Text>
+          <Text className="text-gray-600 mt-2">Sign up to get started</Text>
         </View>
 
         <View className="space-y-4">
           <CustomInput
             placeholder="Enter your name"
-            value={name}
+            value={formData.name}
             onChangeText={(text) => {
-              setName(text);
+              setFormData({ ...formData, name: text });
               setErrors({ ...errors, name: "" });
             }}
             label="Name"
@@ -83,9 +86,9 @@ const SignUp = () => {
 
           <CustomInput
             placeholder="Enter your email"
-            value={email}
+            value={formData.email}
             onChangeText={(text) => {
-              setEmail(text);
+              setFormData({ ...formData, email: text });
               setErrors({ ...errors, email: "" });
             }}
             label="Email"
@@ -95,9 +98,9 @@ const SignUp = () => {
 
           <CustomInput
             placeholder="Enter your password"
-            value={password}
+            value={formData.password}
             onChangeText={(text) => {
-              setPassword(text);
+              setFormData({ ...formData, password: text });
               setErrors({ ...errors, password: "" });
             }}
             label="Password"
