@@ -21,6 +21,7 @@ export const appwriteConfig = {
   menuCollectionId: "menu",
   customizationCollectionId: "customization",
   menuCustomizationsCollectionId: "menu_customizations",
+  ordersCollectionId: "orders",
   platform: "com.faj.food-delivery",
 };
 
@@ -224,5 +225,76 @@ export const getMenu = async ({ category, query }: GetMenuParams) => {
   } catch (error) {
     console.error("Error getting menu:", error);
     return [];
+  }
+};
+
+// --- NEW PROFILE & ORDER FUNCTIONS ---
+
+export const updateUser = async (userId: string, updates: Partial<User>) => {
+  try {
+    const updatedUser = await databases.updateDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.userCollectionId,
+      userId,
+      updates
+    );
+    return updatedUser as unknown as User;
+  } catch (error) {
+    console.error("Error updating user:", error);
+    throw error;
+  }
+};
+
+export const uploadAvatar = async (fileUri: string) => {
+  try {
+    // 1. Prepare file object for Appwrite Storage
+    // On Web, fetching uri to blob is often needed, but Appwrite SDK handles local URIs on Native.
+    // However, for consistency we'll try to provide the object.
+    const file = {
+      name: `avatar_${Date.now()}.jpg`,
+      type: 'image/jpeg',
+      size: 0, // Appwrite will handle this if possible or error
+      uri: fileUri,
+    };
+
+    const uploadedFile = await storage.createFile(
+      appwriteConfig.bucketId,
+      ID.unique(),
+      file as any
+    );
+
+    // 2. Get the file preview/view URL
+    const fileUrl = storage.getFileView(appwriteConfig.bucketId, uploadedFile.$id);
+    return fileUrl.toString();
+  } catch (error) {
+    console.error("Error uploading avatar:", error);
+    throw error;
+  }
+};
+
+export const createOrder = async (orderData: {
+  userId: string;
+  items: any[];
+  totalPrice: number;
+  address: string;
+}) => {
+  try {
+    const order = await databases.createDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.ordersCollectionId,
+      ID.unique(),
+      {
+        userId: orderData.userId,
+        items: JSON.stringify(orderData.items),
+        totalPrice: orderData.totalPrice,
+        status: 'pending',
+        address: orderData.address,
+        createdAt: new Date().toISOString(),
+      }
+    );
+    return order;
+  } catch (error) {
+    console.error("Error creating order:", error);
+    throw error;
   }
 };

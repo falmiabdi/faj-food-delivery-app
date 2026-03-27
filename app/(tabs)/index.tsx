@@ -36,11 +36,11 @@ export default function Index() {
     return (
       <View className="mb-4">
         <Pressable
+          onPress={() => router.push("/(tabs)/search")}
           className={cn('h-40 rounded-3xl overflow-hidden flex-row items-center px-4', isEven ? 'flex-row-reverse' : 'flex-row')}
           style={{ backgroundColor: item.color }}
           android_ripple={{ color: '#ffffff22' }}
-        >
-          <View className="h-full w-1/2 items-center justify-center">
+        ><View className="h-full w-1/2 items-center justify-center">
             <Image
               source={item.image}
               className="size-full"
@@ -48,9 +48,7 @@ export default function Index() {
             />
           </View>
           <View className={cn("flex-1", isEven ? 'pl-4' : 'pr-4')}>
-            <Text className="text-xl font-rubik-bold text-white leading-tight">
-              {item.title}
-            </Text>
+            <Text className="text-xl font-rubik-bold text-white leading-tight">{item.title}</Text>
             <View className="w-8 h-8 rounded-full bg-white/20 items-center justify-center mt-2">
                <Image
                  source={images.arrowRight}
@@ -59,8 +57,7 @@ export default function Index() {
                  tintColor='#ffffff'
                />
             </View>
-          </View>
-        </Pressable>
+          </View></Pressable>
       </View>
     );
   };

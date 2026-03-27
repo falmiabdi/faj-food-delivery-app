@@ -9,7 +9,8 @@ const TabIcon = ({ source, color, focused, badgeCount = 0 }: { source: ImageSour
       <Image 
         source={source} 
         resizeMode="contain" 
-        style={{ width: 24, height: 24, tintColor: color }} 
+        style={{ width: 24, height: 24 }}
+        tintColor={color}
       />
       {badgeCount > 0 && (
         <View className="absolute -top-1.5 -right-2 bg-[#D33B0D] w-4 h-4 rounded-full items-center justify-center border border-white">

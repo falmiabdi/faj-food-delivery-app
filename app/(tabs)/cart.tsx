@@ -1,8 +1,11 @@
+import { createOrder } from "@/lib/appwrite";
 import { useCartStore } from "@/store/cart.store";
+import useAuthStore from "@/store/useAuthStore";
 import { CartItem } from "@/type.d";
 import { router } from "expo-router";
-import React from "react";
+import React, { useState } from "react";
 import {
+  ActivityIndicator,
   Alert,
   FlatList,
   Image,
@@ -75,78 +78,91 @@ const CartItemRow = ({ item }: { item: CartItem }) => {
 };
 
 const Cart = () => {
+  const { user } = useAuthStore();
   const { items, clearCart, getTotalPrice, getTotalItems } = useCartStore();
+  const [loading, setLoading] = useState(false);
+
   const totalItems = getTotalItems();
   const subtotal = getTotalPrice();
   const total = subtotal - DISCOUNT + DELIVERY_FEE;
 
-  const handleOrder = () => {
-    Alert.alert(
-      "Order Placed! 🎉",
-      `Your order of ${totalItems} item(s) worth $${total.toFixed(2)} has been placed.`,
-      [
-        {
-          text: "OK",
-          onPress: () => {
-            clearCart();
-            router.replace("/(tabs)");
+  const handleOrder = async () => {
+    if (!user) {
+      Alert.alert("Error", "Please sign in to place an order.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await createOrder({
+        userId: user.$id,
+        items: items,
+        totalPrice: total,
+        address: user.address1 || "No address provided",
+      });
+
+      Alert.alert(
+        "Order Placed! 🎉",
+        `Your order of ${totalItems} item(s) worth $${total.toFixed(2)} has been placed.`,
+        [
+          {
+            text: "OK",
+            onPress: () => {
+              clearCart();
+              router.replace("/(tabs)");
+            },
           },
-        },
-      ]
-    );
+        ]
+      );
+    } catch (error: any) {
+      console.error(error);
+      if (error?.message?.includes("Collection with the requested ID 'orders' could not be found")) {
+        Alert.alert(
+          "Setup Required",
+          "The 'orders' collection doesn't exist yet. Please create a collection with ID 'orders' in your Appwrite console."
+        );
+      } else {
+        Alert.alert("Error", "Failed to place order. " + error.message);
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <SafeAreaView className="flex-1 bg-[#f8f8f8]">
       {/* Header */}
       <View className="flex-row items-center px-5 pt-4 pb-2">
-        <TouchableOpacity onPress={() => router.back()} className="mr-3">
-          <Text className="text-2xl">←</Text>
-        </TouchableOpacity>
-        <Text className="text-xl font-rubik-bold text-black flex-1">
-          My Cart
-        </Text>
+        <TouchableOpacity onPress={() => router.back()} className="mr-3"><Text className="text-2xl font-rubik-bold">←</Text></TouchableOpacity>
+        <Text className="text-xl font-rubik-bold text-black flex-1">My Cart</Text>
         {items.length > 0 && (
-          <TouchableOpacity onPress={clearCart}>
-            <Text className="text-sm font-rubik text-red-400">Clear All</Text>
-          </TouchableOpacity>
+          <TouchableOpacity onPress={clearCart}><Text className="text-sm font-rubik text-red-400">Clear All</Text></TouchableOpacity>
         )}
       </View>
 
       {/* Delivery Location Banner */}
       {items.length > 0 && (
         <View className="mx-5 mb-3 bg-[#D33B0D]/10 rounded-xl px-4 py-2 flex-row items-center justify-between">
-          <View>
-            <Text className="text-xs font-rubik text-[#D33B0D] uppercase font-bold">
-              Delivery Location
-            </Text>
-            <Text className="font-rubik-bold text-black text-sm mt-0.5">
-              Home
-            </Text>
+          <View className="flex-1">
+            <Text className="text-xs font-rubik text-[#D33B0D] uppercase font-bold">DELIVERY LOCATION</Text>
+            <Text className="font-rubik-bold text-black text-sm mt-0.5" numberOfLines={1}>{user?.address1 || "Address not set"}</Text>
           </View>
-          <TouchableOpacity className="bg-[#D33B0D] rounded-full px-3 py-1">
-            <Text className="text-white text-xs font-rubik-bold">
-              Change Location
-            </Text>
-          </TouchableOpacity>
+          <TouchableOpacity 
+            onPress={() => router.push("/(tabs)/profiles")}
+            className="bg-[#D33B0D] rounded-full px-3 py-1 ml-3"
+          ><Text className="text-white text-xs font-rubik-bold">{user?.address1 ? "Change" : "Set Address"}</Text></TouchableOpacity>
         </View>
       )}
 
       {items.length === 0 ? (
         <View className="flex-1 items-center justify-center">
           <Text className="text-5xl mb-4">🛒</Text>
-          <Text className="font-rubik-bold text-lg text-black">
-            Your cart is empty
-          </Text>
-          <Text className="font-rubik text-sm text-gray-400 mt-1">
-            Add some delicious food!
-          </Text>
+          <Text className="font-rubik-bold text-lg text-black">Your cart is empty</Text>
+          <Text className="font-rubik text-sm text-gray-400 mt-1">Add some delicious food!</Text>
           <TouchableOpacity
             onPress={() => router.replace("/(tabs)/search")}
             className="mt-6 bg-[#D33B0D] px-8 py-3 rounded-full"
-          >
-            <Text className="text-white font-rubik-bold">Browse Menu</Text>
-          </TouchableOpacity>
+          ><Text className="text-white font-rubik-bold">Browse Menu</Text></TouchableOpacity>
         </View>
       ) : (
         <FlatList

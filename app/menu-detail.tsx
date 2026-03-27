@@ -118,9 +118,7 @@ const MenuDetail = () => {
     <SafeAreaView className="flex-1 bg-white">
       {/* Top bar */}
       <View className="flex-row items-center justify-between px-5 pt-3 pb-1">
-        <TouchableOpacity onPress={() => router.back()}>
-          <Text className="text-2xl">←</Text>
-        </TouchableOpacity>
+        <TouchableOpacity onPress={() => router.back()}><Text className="text-2xl">←</Text></TouchableOpacity>
         <TouchableOpacity
           onPress={() => router.push("/(tabs)/cart")}
           className="relative w-10 h-10 bg-[#D33B0D] rounded-full items-center justify-center"

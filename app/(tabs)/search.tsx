@@ -67,21 +67,15 @@ const Search = () => {
         numColumns={2}
         columnWrapperClassName="justify-between px-5 gap-x-4"
         contentContainerClassName="pb-6"
-        ListHeaderComponent={renderHeader}
+        ListHeaderComponent={renderHeader()}
         ListEmptyComponent={
           loading ? (
             <ActivityIndicator className="mt-20" size="large" color="#D33B0D" />
           ) : (
             <View className="items-center mt-20 px-10">
-               <View className="w-40 h-40 bg-gray-50 rounded-full items-center justify-center mb-4">
-                  <Text className="text-6xl">🔍</Text>
-               </View>
-              <Text className="text-xl font-rubik-bold text-black text-center">
-                Nothing matched your search
-              </Text>
-              <Text className="text-sm font-rubik text-gray-400 text-center mt-2">
-                Try a different search term or check for typos.
-              </Text>
+               <View className="w-40 h-40 bg-gray-50 rounded-full items-center justify-center mb-4"><Text className="text-6xl">🔍</Text></View>
+              <Text className="text-xl font-rubik-bold text-black text-center">Nothing matched your search</Text>
+              <Text className="text-sm font-rubik text-gray-400 text-center mt-2">Try a different search term or check for typos.</Text>
             </View>
           )
         }
@@ -97,21 +91,12 @@ const Search = () => {
                 resizeMode="contain"
               />
             </View>
-            <Text className="font-rubik-bold text-[15px] text-black mb-1 px-1" numberOfLines={1}>
-              {item.name}
-            </Text>
-            <Text className="font-rubik text-[11px] text-gray-400 px-1">
-              From ${item.price.toFixed(2)}
-            </Text>
-            
+            <Text className="font-rubik-bold text-[15px] text-black mb-1 px-1" numberOfLines={1}>{item.name}</Text>
+            <Text className="font-rubik text-[11px] text-gray-400 px-1">From ${item.price.toFixed(2)}</Text>
             <TouchableOpacity 
               onPress={() => handleAddToCart(item)}
               className="mt-3 px-4 py-1.5 border border-[#D33B0D]/20 rounded-full self-center"
-            >
-              <Text className="text-[#D33B0D] font-rubik-bold text-[11px]">
-                Add to Cart +
-              </Text>
-            </TouchableOpacity>
+            ><Text className="text-[#D33B0D] font-rubik-bold text-[11px]">Add to Cart +</Text></TouchableOpacity>
           </TouchableOpacity>
         )}
       />
