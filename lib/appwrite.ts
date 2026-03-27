@@ -5,16 +5,22 @@ import {
   Client,
   Databases,
   ID,
-  Query
+  Query,
+  Storage
 } from "react-native-appwrite";
 
 // Configuration
-export const appwriteconfig = {
+export const appwriteConfig = {
   endpoint: process.env.EXPO_PUBLIC_APPWRITE_ENDPOINT!,
   projectId: process.env.EXPO_PUBLIC_APPWRITE_PROJECT_ID!,
   name: process.env.EXPO_PUBLIC_APPWRITE_PROJECT_NAME || "Food Delivery",
   databaseId: "69b879d8002fba4910e1",
+  bucketId: "69c58e4000156963c7b4",
   userCollectionId: "user",
+  categoriesCollectionId: "categories",
+  menuCollectionId: "menu",
+  customizationCollectionId: "customization",
+  menuCustomizationsCollectionId: "menu_customizations",
   platform: "com.faj.food-delivery",
 };
 
@@ -22,9 +28,9 @@ export const appwriteconfig = {
 export const client = new Client();
 
 client
-  .setEndpoint(appwriteconfig.endpoint)
-  .setProject(appwriteconfig.projectId)
-  .setPlatform(appwriteconfig.platform);
+  .setEndpoint(appwriteConfig.endpoint)
+  .setProject(appwriteConfig.projectId)
+  .setPlatform(appwriteConfig.platform);
 
 // Initialize Services
 export const account = new Account(client);
@@ -43,7 +49,7 @@ export const clearExistingSessions = async () => {
     return true;
   }
 };
-
+export const storage = new Storage(client);
 // CREATE USER
 export const createUser = async ({
   email,
@@ -58,8 +64,8 @@ export const createUser = async ({
 
     // Step 2: Create user document with avatar
     const userData = await databases.createDocument(
-      appwriteconfig.databaseId,
-      appwriteconfig.userCollectionId,
+      appwriteConfig.databaseId,
+      appwriteConfig.userCollectionId,
       ID.unique(),
       {
         name: name,
@@ -94,8 +100,8 @@ export const signIn = async ({
 
     // Get user document from database
     const userDocument = await databases.listDocuments(
-      appwriteconfig.databaseId,
-      appwriteconfig.userCollectionId,
+      appwriteConfig.databaseId,
+      appwriteConfig.userCollectionId,
       [Query.equal("email", email)],
     );
 
@@ -106,8 +112,8 @@ export const signIn = async ({
     } else {
       // Create user document if it doesn't exist (fallback)
       user = (await databases.createDocument(
-        appwriteconfig.databaseId,
-        appwriteconfig.userCollectionId,
+        appwriteConfig.databaseId,
+        appwriteConfig.userCollectionId,
         ID.unique(),
         {
           name: currentAccount.name,
@@ -137,8 +143,8 @@ export const getCurrentUser = async (): Promise<User | null> => {
 
     // Get the user document from your database
     const userDocument = await databases.listDocuments(
-      appwriteconfig.databaseId,
-      appwriteconfig.userCollectionId,
+      appwriteConfig.databaseId,
+      appwriteConfig.userCollectionId,
       [Query.equal("email", currentAccount.email)],
     );
 
@@ -149,8 +155,8 @@ export const getCurrentUser = async (): Promise<User | null> => {
 
     // Create user document if it doesn't exist (fallback)
     const newUser = await databases.createDocument(
-      appwriteconfig.databaseId,
-      appwriteconfig.userCollectionId,
+      appwriteConfig.databaseId,
+      appwriteConfig.userCollectionId,
       ID.unique(),
       {
         name: currentAccount.name || "User",
