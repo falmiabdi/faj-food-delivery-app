@@ -1,5 +1,5 @@
 import { getCurrentUser, signOut as signOutAppwrite } from "@/lib/appwrite";
-import { User } from "@/types";
+import { User } from "@/type.d";
 import { create } from "zustand";
 
 let isFetchingAuth = false;

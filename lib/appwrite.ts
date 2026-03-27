@@ -1,4 +1,4 @@
-import { AuthResponse, CreateUserParams, SignInParams, User } from "@/type.d";
+import { AuthResponse, CreateUserParams, GetMenuParams, SignInParams, User } from "@/type.d";
 import {
   Account,
   Avatars,
@@ -182,7 +182,6 @@ export const signOut = async () => {
     throw error;
   }
 };
-
 // CHECK AUTHENTICATION
 export const isAuthenticated = async () => {
   try {
@@ -190,5 +189,40 @@ export const isAuthenticated = async () => {
     return true;
   } catch {
     return false;
+  }
+};
+
+export const getCategories = async () => {
+  try {
+    const categories = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.categoriesCollectionId,
+      []
+    );
+    return categories.documents;
+  } catch (error) {
+    console.error("Error getting categories:", error);
+    return [];
+  }
+};
+
+export const getMenu = async ({ category, query }: GetMenuParams) => {
+  try {
+    const queries: string[] = [];
+    if (category && category !== "All") {
+      queries.push(Query.equal("categories", category));
+    }
+    if (query) {
+      queries.push(Query.search("name", query));
+    }
+    const menu = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.menuCollectionId,
+      queries
+    );
+    return menu.documents;
+  } catch (error) {
+    console.error("Error getting menu:", error);
+    return [];
   }
 };
