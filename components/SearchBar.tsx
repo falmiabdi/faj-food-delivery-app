@@ -1,7 +1,7 @@
-import { images } from "@/constants";
+import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useRef, useState } from "react";
-import { Image, TextInput, TouchableOpacity, View } from "react-native";
+import { TextInput, TouchableOpacity, View } from "react-native";
 
 const SearchBar = () => {
   const params = useLocalSearchParams<{ query?: string }>();
@@ -27,7 +27,7 @@ const SearchBar = () => {
   };
 
   return (
-    <View className="flex-row items-center bg-gray-50 rounded-full mx-5 border border-gray-200 h-10 px-3">
+    <View className="flex-row items-center bg-gray-50 rounded-full mx-5 border border-gray-200 h-9 px-3">
       <TextInput
         className="flex-1 font-rubik text-sm text-black"
         placeholder="Search for pizzas, burgers..."
@@ -37,13 +37,8 @@ const SearchBar = () => {
         returnKeyType="search"
         onSubmitEditing={handleSearchPress}
       />
-      <TouchableOpacity onPress={handleSearchPress} className="ml-2">
-        <Image
-          source={images.search}
-
-          resizeMode="contain"
-          tintColor="black"
-        />
+      <TouchableOpacity onPress={handleSearchPress} className="ml-1">
+        <Ionicons name="search" size={14} color="#A0A0A0" />
       </TouchableOpacity>
     </View>
   );

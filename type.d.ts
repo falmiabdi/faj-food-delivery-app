@@ -31,7 +31,8 @@ export interface CartCustomization {
   type: string;
 }
 
-export interface CartItemType {
+// CartItem is the canonical cart item type
+export interface CartItem {
   id: string; // menu item id
   name: string;
   price: number;
@@ -39,6 +40,9 @@ export interface CartItemType {
   quantity: number;
   customizations?: CartCustomization[];
 }
+
+// alias kept for backward compat
+export type CartItemType = CartItem;
 
 export interface CartStore {
   items: CartItem[];

@@ -1,5 +1,6 @@
 import { images } from "@/constants";
 import useAuthStore from "@/store/useAuthStore";
+import { useCartStore } from "@/store/cart.store";
 import { router } from "expo-router";
 import React from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
@@ -41,6 +42,8 @@ export const HeaderRow = ({
   cartCount?: number;
 }) => {
   const { user } = useAuthStore();
+  const { getTotalItems } = useCartStore();
+  const cartCount = getTotalItems();
 
   return (
     <View className="flex-row items-center justify-between px-5 pt-4 pb-2">
@@ -54,22 +57,36 @@ export const HeaderRow = ({
         </Text>
       </View>
 
-      {/* Right: profile circle */}
-      <TouchableOpacity onPress={() => router.push("/(tabs)/profiles")}>
-        {user?.avatar ? (
-          <Image
-            source={{ uri: user.avatar }}
-            className="w-11 h-11 rounded-full border-2 border-gray-100"
-            resizeMode="cover"
-          />
-        ) : (
-          <View className="w-11 h-11 rounded-full bg-black items-center justify-center">
-            <Text className="text-white text-base font-rubik-bold">
-              {user?.name?.charAt(0)?.toUpperCase() || "?"}
-            </Text>
-          </View>
+      {/* Right: profile circle and cart badge indicator */}
+      <View className="flex-row items-center gap-x-3">
+        {cartCount > 0 && (
+          <TouchableOpacity 
+            onPress={() => router.push("/(tabs)/cart")}
+            className="relative w-10 h-10 bg-gray-100 rounded-full items-center justify-center"
+          >
+             <Text className="text-lg">🛒</Text>
+             <View className="absolute -top-1 -right-1 bg-[#D33B0D] w-5 h-5 rounded-full items-center justify-center border-2 border-white">
+                <Text className="text-[10px] text-white font-rubik-bold">{cartCount}</Text>
+             </View>
+          </TouchableOpacity>
         )}
-      </TouchableOpacity>
+        
+        <TouchableOpacity onPress={() => router.push("/(tabs)/profiles")}>
+          {user?.avatar ? (
+            <Image
+              source={{ uri: user.avatar }}
+              className="w-11 h-11 rounded-full border-2 border-gray-100"
+              resizeMode="cover"
+            />
+          ) : (
+            <View className="w-11 h-11 rounded-full bg-black items-center justify-center">
+              <Text className="text-white text-base font-rubik-bold">
+                {user?.name?.charAt(0)?.toUpperCase() || "?"}
+              </Text>
+            </View>
+          )}
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
